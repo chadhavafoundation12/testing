@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Donate - Chadhava Foundation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Madurai:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Hind Madurai', sans-serif;
+      background: linear-gradient(to bottom, #fffaf2, #ffefdc);
+      color: #4e342e;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 40px auto;
+      background-color: #fff8ee;
+      padding: 30px 25px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(255, 105, 0, 0.15);
+      border: 2px solid #ffd8b2;
+    }
+
+    h1 {
+      text-align: center;
+      color: #d84315;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 17px;
+      color: #ff6f00;
+      margin-bottom: 25px;
+      font-weight: bold;
+    }
+
+    label {
+      font-weight: 600;
+      margin-top: 10px;
+      display: block;
+      color: #5d4037;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 10px;
+      border: 2px solid #ffe0b2;
+      background-color: #fff;
+      font-size: 16px;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #ff9800;
+      outline: none;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      background-color: #e65100;
+      color: #fff;
+      padding: 12px;
+      font-size: 18px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #bf360c;
+    }
+
+    .qr-section {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .qr-section img {
+      max-width: 180px;
+      border-radius: 12px;
+      border: 3px solid #ffe0b2;
+      margin-bottom: 10px;
+    }
+
+    .upi-id {
+      font-weight: bold;
+      color: #6d4c41;
+    }
+
+    .note {
+      text-align: center;
+      margin-top: 20px;
+      color: #6d4c41;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Donate Now</h1>
+    <div class="subtitle">🙏 Aapka daan Mandir seva mein lagega 🙏</div>
+
+    <form onsubmit="return openUPIPayment(event)">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" placeholder="Apna naam likhiye" required />
+
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="example@email.com" required />
+
+      <label for="phone">Mobile Number</label>
+      <input type="tel" id="phone" placeholder="e.g. 9876543210" required />
+
+      <label for="amount">Donation Amount (₹)</label>
+      <input type="number" id="amount" placeholder="₹101, ₹501, ₹1100..." required />
+
+      <label for="message">Message (optional)</label>
+      <textarea id="message" rows="3" placeholder="Aapka sandesh..."></textarea>
+
+      <button type="submit">📿 Donate Now</button>
+    </form>
+
+    <div class="qr-section">
+      <p><strong>Scan this QR to Donate:</strong></p>
+      <img src="your-qr-code.png" alt="UPI QR Code" />
+      <p class="upi-id">UPI ID: <span>gpay-11241690567@okbizaxis</span></p>
+    </div>
+
+    <div class="note">
+      Har ek daan Mandir nirman, bhojan seva aur dharmik karyon mein lagaya jaata hai. Dhanyawaad 🙏
+    </div>
+  </div>
+
+  <script>
+    function openUPIPayment(event) {
+      event.preventDefault();
+
+      const amount = document.getElementById("amount").value.trim();
+      if (!amount || isNaN(amount) || Number(amount) <= 0) {
+        alert("Please enter a valid donation amount.");
+        return false;
+      }
+
+      const upiId = "gpay-11241690567@okbizaxis";
+      const name = "ChadhavaFoundation";
+
+      // Link for most UPI apps like GPay, PhonePe, etc.
+      const upiLink = `upi://pay?pa=${upiId}&pn=${name}&am=${amount}&cu=INR`;
+
+      // Optional: Open Google Pay fallback in browser
+      // const gpayFallback = `https://pay.google.com/gp/p/upi?pa=${upiId}&pn=${name}&am=${amount}&cu=INR`;
+
+      window.location.href = upiLink;
+      return false;
+    }
+  </script>
+
+</body>
+</html>
