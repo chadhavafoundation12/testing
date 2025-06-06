@@ -9,88 +9,117 @@
     body {
       margin: 0;
       font-family: 'Hind Madurai', sans-serif;
-      background: linear-gradient(to bottom, #fffaf2, #ffefdc);
+      background: linear-gradient(to bottom, #fff3e0, #ffe0b2);
       color: #4e342e;
     }
-
     .container {
       max-width: 500px;
       margin: 40px auto;
       background-color: #fff8ee;
       padding: 30px 25px;
       border-radius: 20px;
-      box-shadow: 0 8px 25px rgba(255, 105, 0, 0.15);
+      box-shadow: 0 12px 40px rgba(255, 87, 34, 0.2);
       border: 2px solid #ffd8b2;
+      position: relative;
+      animation: fadeIn 1s ease;
     }
-
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     h1 {
       text-align: center;
-      color: #d84315;
+      color: #bf360c;
       margin-bottom: 5px;
+      font-size: 32px;
     }
-
     .subtitle {
       text-align: center;
-      font-size: 17px;
+      font-size: 18px;
       color: #ff6f00;
       margin-bottom: 25px;
       font-weight: bold;
     }
-
     label {
       font-weight: 600;
-      margin-top: 10px;
+      margin-top: 12px;
       display: block;
       color: #5d4037;
     }
-
     input, textarea, select {
       width: 100%;
-      padding: 10px;
-      margin-top: 5px;
+      padding: 12px;
+      margin-top: 6px;
       border-radius: 10px;
       border: 2px solid #ffe0b2;
       background-color: #fff;
       font-size: 16px;
+      box-sizing: border-box;
     }
-
     input:focus, textarea:focus, select:focus {
       border-color: #ff9800;
       outline: none;
     }
-
     button {
-      margin-top: 20px;
+      margin-top: 22px;
       width: 100%;
       background-color: #e65100;
       color: #fff;
-      padding: 12px;
+      padding: 14px;
       font-size: 18px;
       border: none;
       border-radius: 12px;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background 0.3s ease;
     }
-
     button:hover {
       background-color: #bf360c;
     }
-
-    .note {
+    .qr-container {
       text-align: center;
+      margin-top: 30px;
+    }
+    .qr-container img {
+      border-radius: 12px;
+      border: 2px solid #ffcc80;
+      margin-bottom: 10px;
+    }
+    .confirm-button {
+      display: none;
       margin-top: 20px;
-      color: #6d4c41;
-      font-size: 14px;
+      background-color: #388e3c;
+    }
+    .full-toast {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #fff3e0;
+      color: #bf360c;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 30px;
+      text-align: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      font-weight: bold;
+    }
+    .full-toast.show {
+      opacity: 1;
+      pointer-events: auto;
     }
   </style>
 </head>
 <body>
-
   <div class="container">
     <h1>Donate Now</h1>
     <div class="subtitle">🙏 Aapka daan Mandir seva mein lagega 🙏</div>
 
-    <form onsubmit="return donateNow(event)">
+    <form id="donationForm" onsubmit="return donateNow(event)">
       <label for="name">Full Name</label>
       <input type="text" id="name" placeholder="Apna naam likhiye" required />
 
@@ -117,44 +146,55 @@
       <button type="submit">📿 Donate Now</button>
     </form>
 
-    <div class="note">
-      Har ek daan Mandir nirman, bhojan seva aur dharmik karyon mein lagaya jaata hai. Dhanyawaad 🙏
+    <div class="qr-container" id="qrSection" style="display:none;">
+      <p>Ya QR Scan karke bhi daan karein:</p>
+      <img id="qrCode" src="" width="200" height="200" alt="QR Code" />
+      <button class="confirm-button" id="confirmButton" onclick="confirmDonation()">✅ Confirm Donation</button>
     </div>
   </div>
+
+  <div class="full-toast" id="toast">🎉 Dhanyavaad! Aapka daan safaltapurvak prapt hua hai.</div>
 
   <script>
     function donateNow(event) {
       event.preventDefault();
-
       const amount = document.getElementById("amount").value.trim();
       const paymentApp = document.getElementById("paymentApp").value;
-
-      if (!amount || isNaN(amount) || Number(amount) <= 0) {
-        alert("Please enter a valid donation amount.");
-        return false;
-      }
-
-      if (!paymentApp) {
-        alert("Kripya ek payment app choose karein.");
-        return false;
-      }
-
       const upiID = "gpay-11241690567@okbizaxis";
       const name = "ChadhavaFoundation";
-      let link = "";
+      const message = document.getElementById("message").value.trim();
+
+      let link = `upi://pay?pa=${upiID}&pn=${name}&am=${amount}&cu=INR&tn=${encodeURIComponent(message)}`;
 
       if (paymentApp === "gpay") {
-        link = `upi://pay?pa=${upiID}&pn=${name}&am=${amount}&cu=INR`;
+        window.location.href = link;
       } else if (paymentApp === "phonepe") {
-        link = `phonepe://pay?pa=${upiID}&pn=${name}&am=${amount}&cu=INR`;
+        window.location.href = `phonepe://pay?pa=${upiID}&pn=${name}&am=${amount}&cu=INR&tn=${encodeURIComponent(message)}`;
       } else if (paymentApp === "paytm") {
-        link = `paytmmp://pay?pa=${upiID}&pn=${name}&am=${amount}&cu=INR`;
+        window.location.href = `paytmmp://pay?pa=${upiID}&pn=${name}&am=${amount}&cu=INR&tn=${encodeURIComponent(message)}`;
+      } else {
+        alert("Please select a valid payment app");
+        return;
       }
 
-      window.location.href = link;
+      const qr = document.getElementById("qrCode");
+      qr.src = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(link)}&size=200x200`;
+      document.getElementById("qrSection").style.display = 'block';
+      document.getElementById("confirmButton").style.display = 'inline-block';
       return false;
     }
-  </script>
 
+    function confirmDonation() {
+      showToast("🎉 Dhanyavaad! Aapka daan safaltapurvak prapt hua hai.");
+      document.getElementById("donationForm").reset();
+      document.getElementById("qrSection").style.display = 'none';
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.classList.add("show");
+    }
+  </script>
 </body>
 </html>
